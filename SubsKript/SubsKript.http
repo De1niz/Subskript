@@ -1,0 +1,6 @@
+@SubsKript_HostAddress = http://localhost:5041
+
+GET {{SubsKript_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

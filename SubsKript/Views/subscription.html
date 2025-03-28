@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abonelik Durumu | SubKript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+        }
+        .left-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .status-box {
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            display: inline-block;
+            width: 100%;
+        }
+        .active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .inactive {
+            background-color: #FF5733;
+            color: white;
+        }
+        .info {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="left-container">
+        <div class="logo" onclick="goToHome()">SubKript</div>
+        <div>|</div>
+        <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+    </div>
+</div>
+
+<!-- Abonelik Durumu Kutusu -->
+<div class="container">
+    <h2>Abonelik Bilgileri</h2>
+    <div id="statusBox" class="status-box">Yükleniyor...</div>
+    <p class="info"><strong>Müşteri ID:</strong> <span id="customerId">-</span></p>
+    <p class="info"><strong>Başlangıç Tarihi:</strong> <span id="startDate">-</span></p>
+    <p class="info"><strong>Bitiş Tarihi:</strong> <span id="endDate">-</span></p>
+    <p class="info"><strong>Ödenen Tutar:</strong> <span id="amount">-</span></p>
+</div>
+
+<!-- Scripts -->
+<script>
+    async function loadSubscription() {
+        const subscriptionId = "sub_1R4GFVLwf2wYz1lQRJMdpKv8"; // Değiştirilebilir
+        const response = await fetch(`http://localhost:5041/api/subscription/get-subscription/${subscriptionId}`);
+        const data = await response.json();
+
+        // HTML öğelerine verileri ekle
+        document.getElementById("customerId").innerText = data.customerId;
+        document.getElementById("startDate").innerText = new Date(data.startDate).toLocaleDateString();
+        document.getElementById("endDate").innerText = new Date(data.endDate).toLocaleDateString();
+        document.getElementById("amount").innerText = `${data.amount} ${data.currency}`;
+
+        // Abonelik durumu için renkli kutu güncelleme
+        const statusBox = document.getElementById("statusBox");
+        if (data.status === "active") {
+            statusBox.innerText = "Aktif Abonelik";
+            statusBox.classList.add("active");
+        } else {
+            statusBox.innerText = "Pasif Abonelik";
+            statusBox.classList.add("inactive");
+        }
+    }
+
+    function goToHome() {
+        window.location.href = "index.html";
+    }
+
+    window.onload = loadSubscription;
+</script>
+
+</body>
+</html>

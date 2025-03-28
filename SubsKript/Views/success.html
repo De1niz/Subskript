@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Abonelik Başarılı</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding-top: 100px;
+            margin: 0;
+        }
+
+        .box {
+            background-color: #222;
+            padding: 30px;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(255,255,255,0.1);
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #00ff99;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+
+        .back-btn {
+            margin-top: 40px;
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            background-color: #00cc66;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #00994d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>🎉 Aboneliğin Başarılı!</h1>
+    <div id="info">Yükleniyor...</div>
+    <a href="dashboard.html" class="back-btn">Ana Sayfaya Dön</a>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+
+    function formatDate(unixTimestamp) {
+        if (!unixTimestamp) return "Yok";
+        const date = new Date(unixTimestamp * 1000);
+        return date.toLocaleDateString('tr-TR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    if (!sessionId) {
+        document.getElementById("info").innerHTML = `<p class="error">Session ID bulunamadı.</p>`;
+    } else {
+        fetch(`/checkout-session?sessionId=${sessionId}`)
+            .then(res => res.json())
+            .then(data => {
+                const name = data.customer_name || "Kart sahibi ismi girilmemiş";
+                const amount = data.amount_total ? (data.amount_total / 100).toFixed(2) : "Belirsiz";
+                const platform = data.platform || "Bilinmiyor";
+                const startDate = formatDate(data.start_date);
+                const endDate = formatDate(data.end_date);
+
+                document.getElementById("info").innerHTML = `
+                    <p><span class="highlight">${name}</span> adlı kullanıcı</p>
+                    <p><strong>$${amount}</strong> ödeyerek</p>
+                    <p><span class="highlight">${platform}</span> platformuna abone oldu.</p>
+                    <p><strong>Başlangıç Tarihi:</strong> ${startDate}</p>
+                    <p><strong>Bitiş Tarihi:</strong> ${endDate}</p>
+                `;
+            })
+            .catch(() => {
+                document.getElementById("info").innerHTML = `<p class="error">Stripe'dan veri alınamadı.</p>`;
+            });
+    }
+</script>
+
+</body>
+</html>
