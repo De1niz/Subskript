@@ -4,7 +4,7 @@ const stripe = require('stripe')('sk_test_51R49gSLwf2wYz1lQq77S0ms4pCVKGfanIGMkH
 const PORT = 4242;
 
 // Statik dosyaların bulunduğu klasör
-app.use(express.static('SubsKript/Views'));
+app.use(express.static('Views'));
 app.use(express.json());
 
 // Ödeme oturumu oluşturma

@@ -37,3 +37,4 @@
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/obj/Debug/net8.0/ref/SubsKript.dll
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/package-lock.json
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/package.json
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/obj/Debug/net8.0/SubsKript.sourcelink.json
