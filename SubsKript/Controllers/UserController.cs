@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -28,44 +29,51 @@ namespace SubsKript.Controllers
 
         // 🔐 Giriş (POST: /api/user/login)
         [HttpPost("login")]
+        [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
         public IActionResult Login([FromBody] LoginRequest loginData)
         {
             if (string.IsNullOrWhiteSpace(loginData.Username) || string.IsNullOrWhiteSpace(loginData.Password))
-                return BadRequest(new { message = "Username and password are required." });
+                return BadRequest(new ErrorResponse { Message = "Username and password are required." });
 
             var user = _context.Users.FirstOrDefault(u =>
                 u.Username == loginData.Username && u.Password == loginData.Password);
 
             if (user == null)
-                return Unauthorized(new { message = "Incorrect username or password." });
+                return Unauthorized(new ErrorResponse { Message = "Incorrect username or password." });
 
             var token = GenerateJwtToken(user);
 
-            return Ok(new
+            var response = new LoginResponse
             {
-                id = user.Id,
-                username = user.Username,
-                email = user.Email,
-                token = token
-            });
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Token = token
+            };
+
+            return Ok(response);
         }
 
         // 🔐 Kayıt (POST: /api/user/register)
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest newUser)
         {
-            if (string.IsNullOrWhiteSpace(newUser.Username) ||
-                string.IsNullOrWhiteSpace(newUser.Email) ||
-                string.IsNullOrWhiteSpace(newUser.Password))
+            if (string.IsNullOrWhiteSpace(newUser.Username)
+             || string.IsNullOrWhiteSpace(newUser.Email)
+             || string.IsNullOrWhiteSpace(newUser.Password))
             {
-                return BadRequest(new { message = "Username, email and password are required." });
+                return BadRequest(new ErrorResponse { Message = "Username, email and password are required." });
             }
 
             var userExists = _context.Users.Any(u =>
                 u.Username == newUser.Username || u.Email == newUser.Email);
 
             if (userExists)
-                return BadRequest(new { message = "This username or email is already taken." });
+                return BadRequest(new ErrorResponse { Message = "This username or email is already taken." });
 
             var user = new User
             {
@@ -89,14 +97,15 @@ namespace SubsKript.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "User registered and Stripe customer created successfully." });
+            return Ok(); // sadece 200 dönüyoruz, mesaj gerekirse ekleyebilirsin
         }
 
         // 🔄 Test bağlantı (GET: /api/user/test)
         [HttpGet("test")]
+        [ProducesResponseType(typeof(TestResponse), StatusCodes.Status200OK)]
         public IActionResult TestConnection()
         {
-            return Ok(new { message = "Bağlantı başarılı." });
+            return Ok(new TestResponse { Message = "Bağlantı başarılı." });
         }
 
         private string GenerateJwtToken(User user)
@@ -123,18 +132,36 @@ namespace SubsKript.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        // ----- DTO’lar -----
         public class LoginRequest
         {
-            public string Username { get; set; }
-            public string Password { get; set; }
+            public string Username { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
         }
 
         public class RegisterRequest
         {
-            public string Username { get; set; }
-            public string Email { get; set; }
-            public string Password { get; set; }
+            public string Username { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+        }
+
+        public class LoginResponse
+        {
+            public int Id { get; set; }
+            public string Username { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
+            public string Token { get; set; } = string.Empty;
+        }
+
+        public class ErrorResponse
+        {
+            public string Message { get; set; } = string.Empty;
+        }
+
+        public class TestResponse
+        {
+            public string Message { get; set; } = string.Empty;
         }
     }
 }
-//example

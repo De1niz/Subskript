@@ -119,3 +119,12 @@
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/obj/Debug/net8.0/SubsKript.RazorAssemblyInfo.cache
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/obj/Debug/net8.0/SubsKript.RazorAssemblyInfo.cs
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/SubsKript.staticwebassets.runtime.json
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.Bcl.Memory.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
