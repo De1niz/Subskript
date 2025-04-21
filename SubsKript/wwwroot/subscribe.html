@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abone Ol</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 100px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkgreen;
+        }
+
+        .back {
+            margin-top: 40px;
+            color: gray;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <!-- ✅ Stripe JavaScript kütüphanesi eklenmeli -->
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Abone olmak istediğin servisi seç</h1>
+    <select id="serviceSelect">
+        <option value="Apple TV">Apple TV</option>
+        <option value="Spotify">Spotify</option>
+        <option value="ESPN">ESPN</option>
+        <option value="Amazon Prime">Amazon Prime</option>
+        <option value="Netflix">Netflix</option>
+    </select>
+    <br>
+    <button onclick="subscribe()">Subscribe Now</button>
+
+    <div class="back" onclick="goBack()">← Go Back</div>
+</div>
+
+<script>
+    const userId = localStorage.getItem("userId");
+
+    async function subscribe() {
+        const selectedService = document.getElementById("serviceSelect").value;
+
+        if (!userId) {
+            alert("Kullanıcı bulunamadı. Lütfen önce giriş yapın.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/subscriptions/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: parseInt(userId),
+                    platform: selectedService
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Bilinmeyen hata oluştu');
+            }
+
+            // ✅ Stripe yönlendirmesi burada yapılır
+            const stripe = Stripe("pk_test_51R49gSLwf2wYz1lQ5g8eTq9NcWlUvpIJBePbnR4Pqqe3XuzkWG3WdqSDaU8f6rLamXghaBrQFiDsspilEZW86OT100c6Vg5udC"); // BURAYA PUBLISHABLE KEY’ini yaz
+
+            await stripe.redirectToCheckout({
+                sessionId: data.sessionId
+            });
+
+        } catch (error) {
+            console.error("Stripe bağlantı hatası:", error);
+            alert("Stripe bağlantı hatası: " + error.message);
+        }
+    }
+
+    function goBack() {
+        window.location.href = "dashboard.html";
+    }
+</script>
+</body>
+</html>

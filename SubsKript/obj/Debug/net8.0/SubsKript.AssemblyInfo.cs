@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SubsKript")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f0aa04e4f076f2a65037e701e3036366968c759d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+445cbb8bdd07c8c4188fbee1fd1ebeac5ab03ca8")]
 [assembly: System.Reflection.AssemblyProductAttribute("SubsKript")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SubsKript")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

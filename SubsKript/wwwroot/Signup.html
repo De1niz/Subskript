@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subsify Login</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #fff;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+        }
+
+        .left-panel {
+            flex: 1;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .left-panel img {
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-container {
+            width: 320px;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: gray;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        .separator span {
+            margin: 0 10px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        #loginBtn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: #3266e3;
+            color: white;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #loginBtn.success {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            padding: 0;
+            background-color: #2ecc71;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        #tick {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+            animation: tickAnim 0.5s ease forwards;
+        }
+
+        @keyframes tickAnim {
+            0% { opacity: 0; transform: scale(0.5) rotate(45deg); }
+            100% { opacity: 1; transform: scale(1) rotate(45deg); }
+        }
+
+        .bottom-text {
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .bottom-text a {
+            color: #3266e3;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                flex: unset;
+                width: 100%;
+            }
+            .left-panel {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sol Panel -->
+    <div class="left-panel">
+        <img src="subs.png" alt="Login Visual" />
+    </div>
+
+    <!-- Sağ Panel -->
+    <div class="right-panel">
+        <div class="form-container">
+            <h2>Sign in</h2>
+
+            <div class="separator"><span>or</span></div>
+
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+
+            <button id="loginBtn" onclick="login()">
+                Sign in
+                <div id="tick"></div>
+            </button>
+
+            <div class="bottom-text">
+                or <a href="register.html">create an account</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    async function login() {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const loginBtn = document.getElementById("loginBtn");
+        const tick = document.getElementById("tick");
+
+        if (!username || !password) {
+            alert("Please enter both username and password.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (!response.ok) {
+                alert("Incorrect username or password.");
+                return;
+            }
+
+            const user = await response.json();
+
+            // ✅ Giriş başarılı: bilgileri kaydet
+            localStorage.setItem("userId", user.id);
+            localStorage.setItem("username", user.username);
+
+            // ✅ Eğer email varsa localStorage’a kaydet
+            if (user.email) {
+                localStorage.setItem("userEmail", user.email);
+            }
+
+            loginBtn.classList.add("success");
+            loginBtn.innerHTML = "";
+            tick.style.display = "block";
+            loginBtn.appendChild(tick);
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html?userId=" + user.id;
+            }, 1500);
+
+        } catch (err) {
+            console.error("Login error:", err);
+            alert("Login failed. Please try again.");
+        }
+    }
+</script>
+
+
+</body>
+</html>

@@ -1,46 +1,31 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+using SubsKript.Services;
+using SubsKript.Models;
 
 namespace SubsKript.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/customers")]
     public class CustomersController : ControllerBase
     {
-        //example customer
-        private static List<Customer> _customers = new List<Customer>
-        {
-            new Customer { Id = 1, Name = "Anastasya" },
-            new Customer { Id = 2, Name = "Asya" },
-            new Customer { Id = 3, Name = "Eda" },
-            new Customer { Id = 3, Name = "Jack" },
-        };
+        private readonly StripeService _stripeService;
 
-        // get api 
-        [HttpGet]
-        public IActionResult GetAllCustomers()
+        public CustomersController(StripeService stripeService)
         {
-            return Ok(_customers);
+            _stripeService = stripeService;
         }
 
-        // delete api 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteCustomer(int id)
+        [HttpPost]
+        public async Task<IActionResult> CreateCustomer([FromBody] Customer model)
         {
-            var customer = _customers.FirstOrDefault(c => c.Id == id);
-            if (customer == null)
-                return NotFound();
+            if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Name))
+            {
+                return BadRequest(new { message = "İsim ve e-posta boş olamaz." });
+            }
 
-            _customers.Remove(customer);
-            return NoContent();
+            var customerId = await _stripeService.CreateCustomer(model.Email, model.Name);
+            return Ok(new { customerId });
         }
-    }
-
-    // customer model 
-    public class Customer
-    {
-        public int Id { get; set; }      
-        public string Name { get; set; }
     }
 }

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abonelikler | SubKript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .subscription {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .status {
+            padding: 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .canceled {
+            background-color: #FF5733;
+            color: white;
+        }
+        .pending {
+            background-color: #F39C12;
+            color: white;
+        }
+        .customer-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .loading {
+            font-size: 16px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">Tüm Abonelikler</div>
+
+<div class="container">
+    <h2>Abonelikler</h2>
+    <div id="subscriptions">
+        <p class="loading">Abonelikler yükleniyor...</p>
+    </div>
+</div>
+
+<script>
+    const customers = [
+        { name: "Gigi Hadi", id: "sub_1R4GFVLwf2wYz1lQRJMdpKv8" },
+        { name: "Barbara Palvin", id: "sub_1R4GW8Lwf2wYz1lQzXPWVxl3" },
+        { name: "Kobe Bryant", id: "sub_1R4GaLLwf2wYz1lQFvGA9bLe" },
+        { name: "Stephen Curry", id: "sub_1R4GdxLwf2wYz1lQOBjZwEUF" },
+        { name: "Adam Brook", id: "sub_1R4XH3Lwf2wYz1lQMAZI1ARd" }
+    ];
+
+    async function fetchSubscriptionData(customer) {
+        try {
+            // Backend API'yi çağır
+            const response = await fetch(customer.localUrl);
+
+            if (!response.ok) {
+                throw new Error(`API Hatası: ${response.status} - ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            console.log("✅ API Yanıtı:", data); // Tarayıcı konsolunda JSON yanıtını gör
+
+            let statusClass = data.status === "active" ? "active" :
+                data.status === "canceled" ? "canceled" : "pending";
+
+            let formattedAmount = `${data.amount} ${data.currency}`;
+            let endDate = data.endDate ? new Date(data.endDate * 1000).toLocaleDateString() : "Bilgi Yok";
+
+            return {
+                name: customer.name,
+                paymentAmount: formattedAmount,
+                status: data.status.toUpperCase(),
+                statusClass: statusClass,
+                endDate: endDate
+            };
+        } catch (error) {
+            console.error(`❌ Veri çekme hatası (${customer.name}):`, error);
+            return null;
+        }
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .register-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3266e3;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .login-link a {
+            color: #3266e3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-box">
+    <h2>Create Account</h2>
+
+    <input type="text" id="username" placeholder="Kullanıcı adı" />
+    <input type="email" id="email" placeholder="Email adresi" />
+    <input type="password" id="password" placeholder="Şifre" />
+    <button onclick="registerUser()">Register</button>
+
+
+    <div class="login-link">
+        Already have an account? <a href="signup.html">Login here</a>
+    </div>
+</div>
+
+<script>
+    
+    async function registerUser() {
+        
+        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        console.log({ username, email, password });
+
+        // Basit doğrulamalar
+        if (!username || !email || !password) {
+            alert("❗ Lütfen tüm alanları doldurun.");
+            return;
+        }
+
+        // Email format kontrolü (Regex)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("❌ Geçerli bir e-posta adresi girin.");
+            return;
+        }
+
+        // Şifre kontrolü: en az 6 karakter (opsiyonel)
+        if (password.length < 6) {
+            alert("❌ Şifreniz en az 6 karakter olmalı.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/user/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(
+                    { username, email, password })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert("❌ Kayıt hatası: " + (error.message || "Sunucu hatası."));
+                return;
+            }
+
+            alert("✅ Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...");
+            window.location.href = "signup.html";
+        } catch (err) {
+            console.error("Register error:", err);
+            alert("⚠️ Sunucuya bağlanılamadı veya ağ hatası.");
+        }
+    }
+</script>
+
+
+
+
+</body>
+</html>

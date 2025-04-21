@@ -1,10 +1,12 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 const stripe = require('stripe')('sk_test_51R49gSLwf2wYz1lQq77S0ms4pCVKGfanIGMkH3YISSvlNcCKdq1fHn0H8CgCF5YCqM9YHUpxlx3ecLY6D6fNkOTD003dZ7WFMw');
 const PORT = 4242;
 
-// Statik dosyaların bulunduğu klasör
-app.use(express.static('Views'));
+// 🔽 wwwroot klasörünü statik dosya olarak tanıt
+app.use(express.static(path.join(__dirname, 'wwwroot')));
+
 app.use(express.json());
 
 // Ödeme oturumu oluşturma
@@ -89,5 +91,5 @@ app.get('/checkout-session', async (req, res) => {
 
 // Sunucuyu başlat
 app.listen(PORT, () => {
-    console.log(`✅ Server ${PORT} portunda `);
+    console.log(`✅ Server ${PORT} port `);
 });

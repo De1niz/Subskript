@@ -1,40 +1,70 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Stripe;
-using System;
+using SubsKript.Data;
+using SubsKript.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ✅ Stripe Key + appsettings yükle
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-
-// ✅ Stripe API Anahtarını `appsettings.json` İçinden Al
 var stripeSecretKey = builder.Configuration["Stripe:SecretKey"];
 if (string.IsNullOrEmpty(stripeSecretKey))
-{
-    
-    throw new Exception("⚠ Stripe API anahtarı bulunamadı! `appsettings.json` dosyanı kontrol et.");
-}
+    throw new Exception("⚠ Stripe Secret Key eksik!");
 StripeConfiguration.ApiKey = stripeSecretKey;
 
-// ✅ Servisleri Bağımlılıklar İçin Ekleyelim
+// ✅ Veritabanı
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// ✅ JWT Ayarları
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// ✅ Servisler
+builder.Services.AddScoped<StripeService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<StripeService>();
 
-// ✅ CORS Ayarları (Frontend bağlanacaksa)
+// ✅ CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
 
-// ✅ Geliştirme Ortamında Swagger Kullan
+// ✅ Geliştirme ortamı
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -42,9 +72,22 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
 app.UseCors("AllowAll");
 
+// ✅ JWT Middleware
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
+// ✅ Veritabanı ilk setup (isteğe bağlı)
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    DbInitializer.Initialize(context); // Yorum satırı yapabilirsin
+}
 
 app.Run();
