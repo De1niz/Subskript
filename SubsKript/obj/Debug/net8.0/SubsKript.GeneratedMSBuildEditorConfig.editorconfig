@@ -18,10 +18,10 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = /Users/deniz/Desktop/MVC/SubsKript/SubsKript
 build_property._RazorSourceGeneratorDebug = 
 
-[/Users/deniz/Desktop/MVC/SubsKript/SubsKript/View/auth/Login.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlldy9hdXRoL0xvZ2luLmNzaHRtbA==
+[/Users/deniz/Desktop/MVC/SubsKript/SubsKript/Views/Admin/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/deniz/Desktop/MVC/SubsKript/SubsKript/View/dashboard/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlldy9kYXNoYm9hcmQvaW5kZXguY3NodG1s
+[/Users/deniz/Desktop/MVC/SubsKript/SubsKript/Views/Admin/Users.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vVXNlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

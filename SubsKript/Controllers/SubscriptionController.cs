@@ -5,6 +5,7 @@ using SubsKript.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 // Stripe alias tanımı
 using StripeCustomerService = Stripe.CustomerService;
@@ -17,11 +18,13 @@ namespace SubsKript.Controllers
     {
         private readonly AppDbContext _context;
         private readonly StripeService _stripeService;
+        private readonly ILogger<SubscriptionController> _logger;
 
-        public SubscriptionController(AppDbContext context, StripeService stripeService)
+        public SubscriptionController(AppDbContext context, StripeService stripeService, ILogger<SubscriptionController> logger)
         {
             _context = context;
             _stripeService = stripeService;
+            _logger = logger;
         }
 
         // 🔹 Abonelik bilgisi getirme (GET: /api/subscriptions?username=Ece&platform=Spotify)
@@ -31,12 +34,10 @@ namespace SubsKript.Controllers
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(platform))
                 return BadRequest(new { message = "Kullanıcı adı veya platform eksik." });
 
-            // 1️⃣ Kullanıcıyı veritabanında bul
             var user = _context.Users.FirstOrDefault(u => u.Username == username);
             if (user == null)
                 return NotFound(new { message = "Kullanıcı veritabanında bulunamadı." });
 
-            // 2️⃣ Stripe müşteri bilgisi
             StripeConfiguration.ApiKey = "sk_test_51R49gSLwf2wYz1lQq77S0ms4pCVKGfanIGMkH3YISSvlNcCKdq1fHn0H8CgCF5YCqM9YHUpxlx3ecLY6D6fNkOTD003dZ7WFMw";
             var customerService = new StripeCustomerService();
 
@@ -58,27 +59,23 @@ namespace SubsKript.Controllers
                     return NotFound(new { message = "Stripe'da müşteri bulunamadı." });
             }
 
-            // 3️⃣ Abonelikleri al
             var subscriptionService = new SubscriptionService();
             var subscriptions = subscriptionService.List(new SubscriptionListOptions
             {
                 Customer = stripeCustomer.Id
             });
 
-            // 4️⃣ Platforma göre filtrele
-            var normalizedPlatform = platform.ToLower().Replace(" ", "").Trim();
+            var normalizedPlatform = platform.ToLower().Replace(" ", "").Replace("+", "").Trim();
 
             var filtered = subscriptions
                 .Where(s => s.Items.Data.Any(i =>
                     i.Price?.Product is Product product &&
                     !string.IsNullOrEmpty(product.Name) &&
                     (
-                        product.Name.ToLower().Replace(" ", "").Trim().Contains(normalizedPlatform)
-                        || normalizedPlatform.Contains(product.Name.ToLower().Replace(" ", "").Trim())
+                        product.Name.ToLower().Replace(" ", "").Replace("+", "").Trim().Contains(normalizedPlatform)
+                        || normalizedPlatform.Contains(product.Name.ToLower().Replace(" ", "").Replace("+", "").Trim())
                     )
                 ))
-
-
                 .Select(s => new
                 {
                     platform = platform,
@@ -106,6 +103,7 @@ namespace SubsKript.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Checkout oturumu oluşturulurken hata oluştu.");
                 return BadRequest(new { error = ex.Message });
             }
         }

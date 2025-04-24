@@ -34,6 +34,30 @@ namespace SubsKript.Controllers
             return Ok(new { url = session.Url });
         }
 
+        [HttpGet("api/subscription/{userId}/{platform}")]
+        public IActionResult GetSubscriptionInfo(int userId, string platform)
+        {
+            var subscription = _context.Subscriptions
+                .FirstOrDefault(s => s.UserId == userId && s.Platform.ToLower() == platform.ToLower());
+
+            if (subscription == null)
+                return NotFound(new { message = "Abonelik bulunamadı." });
+
+            return Ok(new
+            {
+                subscription.Platform,
+                subscription.StartDate,
+                subscription.EndDate,
+                subscription.Status,
+                subscription.Amount
+            });
+        }
+
+        
+        
+        
+        
+        
         [HttpGet("success")]
         public async Task<IActionResult> Success([FromQuery] string session_id)
         {

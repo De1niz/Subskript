@@ -1,0 +1,99 @@
+@model List<SubsKript.Models.User>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Kullanıcı Listesi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f5f5f5;
+        }
+
+        .logout {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .delete-btn {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #a93226;
+        }
+    </style>
+</head>
+<body>
+<h2>Kullanıcı Listesi</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Kullanıcı ID</th>
+        <th>Kullanıcı Adı</th>
+        <th>Email</th>
+        <th>İşlem</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr id="row-@user.Id">
+            <td>@user.Id</td>
+            <td>@user.Username</td>
+            <td>@user.Email</td>
+            <td>
+                <button class="delete-btn" onclick="deleteUser(@user.Id)">Sil</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a class="logout" href="/admin/logout">Çıkış Yap</a>
+
+<script>
+    async function deleteUser(id) {
+        if (!confirm("Bu kullanıcıyı silmek istediğinize emin misiniz?")) return;
+
+        const res = await fetch(`/api/admin/users/${id}`, {
+            method: "DELETE"
+        });
+
+        if (res.ok) {
+            document.getElementById("row-" + id).remove();
+            alert("Kullanıcı silindi.");
+        } else {
+            alert("Silme işlemi başarısız.");
+        }
+    }
+</script>
+
+</body>
+</html>

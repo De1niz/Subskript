@@ -106,7 +106,7 @@ namespace SubsKript.Services
                     }
                 },
                 Mode = "subscription",
-                SuccessUrl = $"http://localhost:5041/success.html?session_id={{CHECKOUT_SESSION_ID}}",
+                SuccessUrl = $"http://localhost:5041/success?session_id={{CHECKOUT_SESSION_ID}}",
                 CancelUrl = $"http://localhost:5041/dashboard.html",
                 Metadata = new Dictionary<string, string>
                 {

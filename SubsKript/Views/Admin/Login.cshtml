@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Admin Giriş";
+}
+
+<h2>Admin Panel Girişi</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div style="color:red;">@ViewBag.Error</div>
+}
+
+<form method="post" action="/admin/login">
+    <label>Kullanıcı Adı:</label><br />
+    <input type="text" name="username" required /><br /><br />
+
+    <label>Şifre:</label><br />
+    <input type="password" name="password" required /><br /><br />
+
+    <button type="submit">Giriş Yap</button>
+</form>

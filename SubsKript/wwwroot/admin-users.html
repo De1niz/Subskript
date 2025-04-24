@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin - Kullanıcı Yönetimi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f4f6f9;
+        }
+        h2 { margin-bottom: 20px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        .logout {
+            float: right;
+            background: #34495e;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>👨‍💻 Admin Panel - Kullanıcılar
+    <button class="logout" onclick="logout()">Çıkış Yap</button>
+</h2>
+
+<table id="userTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Kullanıcı Adı</th>
+        <th>Email</th>
+        <th>İşlem</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Dinamik kullanıcılar buraya gelecek -->
+    </tbody>
+</table>
+
+<script>
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+        window.location.href = "admin-login.html";
+    }
+
+    async function loadUsers() {
+        try {
+            const response = await fetch('/api/admin/users', {
+                method: 'GET',
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                alert("Yetkisiz erişim.");
+                window.location.href = "admin-login.html";
+                return;
+            }
+
+            const users = await response.json();
+            const tbody = document.querySelector("#userTable tbody");
+            tbody.innerHTML = "";
+
+            users.forEach(user => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td><button onclick="deleteUser(${user.id})">Sil</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        } catch (err) {
+            alert("Kullanıcılar yüklenemedi.");
+            console.error(err);
+        }
+    }
+
+    async function deleteUser(id) {
+        if (!confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
+
+        try {
+            const response = await fetch(`/api/admin/users/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 204) {
+                loadUsers();
+            } else {
+                alert("Kullanıcı silinemedi.");
+            }
+        } catch (err) {
+            alert("Bir hata oluştu.");
+            console.error(err);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminUsername");
+        window.location.href = "admin-login.html";
+    }
+
+    loadUsers();
+</script>
+
+</body>
+</html>

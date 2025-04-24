@@ -25,7 +25,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="View\auth\Login.cshtml.cs" />
+      <_ContentIncludedByDefault Remove="View\auth\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="View\dashboard\index.cshtml" />
+      <_ContentIncludedByDefault Remove="View\User.cshtml" />
     </ItemGroup>
 
 </Project>
