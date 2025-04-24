@@ -171,6 +171,7 @@ SubsKript
 - Admins log in via `admin-login.html`
 - Admin token is generated via JWT and sent with all protected requests
 - Admin panel (`admin-users.html`) enables viewing and deletion of users
+- Login from the top right on the login screen
 
 ---
 
