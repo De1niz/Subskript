@@ -29,7 +29,7 @@ namespace SubsKript.Controllers
                 return Ok(new { token });
             }
 
-            return Unauthorized(new { message = "Geçersiz admin bilgileri" });
+            return Unauthorized(new { message = "Invalid admin credentials" });
         }
 
         private string GenerateJwtToken()

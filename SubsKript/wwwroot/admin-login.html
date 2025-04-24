@@ -59,7 +59,7 @@
         const password = document.getElementById("password").value.trim();
 
         if (!username || !password) {
-            alert("Lütfen kullanıcı adı ve şifre girin.");
+            alert("Please enter username and password.");
             return;
         }
 
@@ -73,7 +73,7 @@
             });
 
             if (!response.ok) {
-                alert("Kullanıcı adı veya şifre yanlış.");
+                alert("The username or password is incorrect.");
                 return;
             }
 
@@ -84,8 +84,8 @@
             // ✅ Başarılı giriş sonrası yönlendir
             window.location.href = "admin-users.html";
         } catch (error) {
-            console.error("Giriş hatası:", error);
-            alert("Giriş sırasında bir hata oluştu.");
+            console.error("Entry error:", error);
+            alert("There was an error during login.");
         }
     }
 </script>

@@ -26,11 +26,11 @@ namespace SubsKript.Controllers
 
             if (user != null)
             {
-                // Giriş başarılıysa yönlendir (örneğin Dashboard)
+                // If login is successful, redirect (e.g., to Dashboard)
                 return RedirectToAction("Index", "Dashboard", new { userId = user.Id });
             }
 
-            ViewBag.Error = "Kullanıcı adı veya şifre hatalı!";
+            ViewBag.Error = "Invalid username or password!";
             return View();
         }
     }

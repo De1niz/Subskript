@@ -2,24 +2,28 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using SubsKript.Services;
 
-[Route("api/[controller]")]
-[ApiController]
-public class PaymentController : ControllerBase
+namespace SubsKript.Controllers
 {
-    private readonly StripeService _stripeService;
-
-    public PaymentController(StripeService stripeService)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PaymentController : ControllerBase
     {
-        _stripeService = stripeService;
-    }
+        private readonly StripeService _stripeService;
 
-    [HttpPost]
-    public async Task<IActionResult> ChargeSubscription([FromBody] Payment model)
-    {
-        var success = await _stripeService.ChargeSubscription(model.CustomerId, model.Amount);
-        if (success)
-            return Ok(new { message = "Payment successful!" });
-        
-        return BadRequest(new { message = "Payment failed!" });
+        public PaymentController(StripeService stripeService)
+        {
+            _stripeService = stripeService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChargeSubscription([FromBody] Payment model)
+        {
+            var success = await _stripeService.ChargeSubscription(model.CustomerId, model.Amount);
+
+            if (success)
+                return Ok(new { message = "Payment successful!" });
+
+            return BadRequest(new { message = "Payment failed!" });
+        }
     }
 }

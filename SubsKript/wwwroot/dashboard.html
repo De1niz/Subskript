@@ -106,7 +106,7 @@
 <div class="container">
     <h1>Welcome <span id="usernameDisplay"></span> 👋</h1>
 
-    <!-- Abonelik Servisleri -->
+    <!-- Subscription Services -->
     <div class="services">
         <div class="service" onclick="showSubscription('Apple TV')">
             <span class="delete-icon" onclick="confirmDelete(event, this)">×</span>
@@ -135,10 +135,10 @@
         </div>
     </div>
 
-    <!-- Abone Ol Bölümü -->
+    <!-- Subscribe Section -->
     <div class="subscribe-section">
         <p>Subscribe to any platform you want</p>
-        <button onclick="goToSubscribe()">Abone Ol</button>
+        <button onclick="goToSubscribe()">Subscribe</button>
     </div>
 
     <div class="profile-management">
@@ -153,7 +153,7 @@
     const userId = localStorage.getItem("userId");
 
     if (!username || !userId) {
-        alert("Kullanıcı oturumu bulunamadı.");
+        alert("User session not found.");
         window.location.href = "signup.html";
     } else {
         document.getElementById("usernameDisplay").textContent = username;
@@ -170,20 +170,20 @@
 
             const container = document.getElementById("subscriptionInfo");
             if (!response.ok) {
-                container.innerHTML = `<p style="color: gray; font-size: 16px; margin-top: 20px;">${platform} için aboneliğiniz bulunmamaktadır.</p>`;
+                container.innerHTML = `<p style="color: gray; font-size: 16px; margin-top: 20px;">You do not have a subscription to ${platform}.</p>`;
                 return;
             }
 
             container.innerHTML = `
-                <h2 style="margin-bottom: 10px;">${platform} Aboneliği</h2>
+                <h2 style="margin-bottom: 10px;">${platform} Subscription</h2>
                 <table>
                     <thead>
                         <tr>
                             <th>Platform</th>
-                            <th>Ücret</th>
-                            <th>Durum</th>
-                            <th>Başlangıç</th>
-                            <th>Bitiş</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Start</th>
+                            <th>End</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -200,11 +200,10 @@
 
         } catch (error) {
             console.error("Subscription fetch error:", error);
-            document.getElementById("subscriptionInfo").innerHTML = `<p style="color: red;">Abonelik bilgisi alınırken hata oluştu.</p>`;
+            document.getElementById("subscriptionInfo").innerHTML = `<p style="color: red;">Error retrieving subscription information.</p>`;
         }
     }
 </script>
 
 </body>
 </html>
-

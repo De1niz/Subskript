@@ -6,7 +6,7 @@ using SubsKript.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SubModel = SubsKript.Models.Subscription; 
+using SubModel = SubsKript.Models.Subscription;
 
 namespace SubsKript.Controllers
 {
@@ -21,14 +21,14 @@ namespace SubsKript.Controllers
         {
             _context = context;
             _stripeService = stripeService;
-            StripeConfiguration.ApiKey = "sk_test_51R49gSLwf2wYz1lQq77S0ms4pCVKGfanIGMkH3YISSvlNcCKdq1fHn0H8CgCF5YCqM9YHUpxlx3ecLY6D6fNkOTD003dZ7WFMw"; // Stripe Secret Key buraya
+            StripeConfiguration.ApiKey = "sk_test_51R49gSLwf2wYz1lQq77S0ms4pCVKGfanIGMkH3YISSvlNcCKdq1fHn0H8CgCF5YCqM9YHUpxlx3ecLY6D6fNkOTD003dZ7WFMw"; // Stripe Secret Key here
         }
 
         [HttpPost("subscribe")]
         public async Task<IActionResult> Subscribe([FromQuery] int userId, [FromQuery] string platform)
         {
             if (userId <= 0 || string.IsNullOrWhiteSpace(platform))
-                return BadRequest("Kullanıcı veya platform bilgisi eksik.");
+                return BadRequest("User or platform information is missing.");
 
             var session = await _stripeService.CreateCheckoutSessionAsync(userId, platform);
             return Ok(new { url = session.Url });
@@ -41,7 +41,7 @@ namespace SubsKript.Controllers
                 .FirstOrDefault(s => s.UserId == userId && s.Platform.ToLower() == platform.ToLower());
 
             if (subscription == null)
-                return NotFound(new { message = "Abonelik bulunamadı." });
+                return NotFound(new { message = "Subscription not found." });
 
             return Ok(new
             {
@@ -53,11 +53,6 @@ namespace SubsKript.Controllers
             });
         }
 
-        
-        
-        
-        
-        
         [HttpGet("success")]
         public async Task<IActionResult> Success([FromQuery] string session_id)
         {
@@ -65,7 +60,7 @@ namespace SubsKript.Controllers
             var metadata = session.Metadata;
 
             if (!metadata.ContainsKey("userId") || !metadata.ContainsKey("platform"))
-                return BadRequest("Stripe metadata eksik.");
+                return BadRequest("Stripe metadata is missing.");
 
             int userId = int.Parse(metadata["userId"]);
             string platform = metadata["platform"];
@@ -97,8 +92,8 @@ namespace SubsKript.Controllers
             var subscription = await _stripeService.GetStripeSubscriptionAsync(session.SubscriptionId);
 
             var metadata = session.Metadata;
-            string name = session.CustomerDetails?.Name ?? "Bilinmiyor";
-            string platform = metadata.ContainsKey("platform") ? metadata["platform"] : "Bilinmiyor";
+            string name = session.CustomerDetails?.Name ?? "Unknown";
+            string platform = metadata.ContainsKey("platform") ? metadata["platform"] : "Unknown";
             long? amountTotal = session.AmountTotal;
 
             long start = ((DateTimeOffset)subscription.CurrentPeriodStart).ToUnixTimeSeconds();

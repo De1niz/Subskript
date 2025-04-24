@@ -37,7 +37,7 @@ namespace SubsKript.Controllers
                 return RedirectToAction("Users");
             }
 
-            ViewBag.Error = "Geçersiz admin bilgileri";
+            ViewBag.Error = "Invalid admin credentials";
             return View("Login");
         }
 

@@ -65,9 +65,9 @@
 <body>
 
 <div class="box">
-    <h1>🎉 Aboneliğin Başarılı!</h1>
-    <div id="info">Yükleniyor...</div>
-    <a href="dashboard.html" class="back-btn">Ana Sayfaya Dön</a>
+    <h1>🎉 Your subscription is successful!</h1>
+    <div id="info">Loading...</div>
+    <a href="dashboard.html" class="back-btn">Back to Home Page</a>
 </div>
 
 <script>
@@ -85,27 +85,27 @@
     }
 
     if (!sessionId) {
-        document.getElementById("info").innerHTML = `<p class="error">Session ID bulunamadı.</p>`;
+        document.getElementById("info").innerHTML = `<p class="error">Session ID not found.</p>`;
     } else {
         fetch(`/checkout-session?sessionId=${sessionId}`)
             .then(res => res.json())
             .then(data => {
-                const name = data.customer_name || "Kart sahibi ismi girilmemiş";
-                const amount = data.amount_total ? (data.amount_total / 100).toFixed(2) : "Belirsiz";
-                const platform = data.platform || "Bilinmiyor";
+                const name = data.customer_name || "Cardholder name not entered";
+                const amount = data.amount_total ? (data.amount_total / 100).toFixed(2) : "Uncertain";
+                const platform = data.platform || "Unknown";
                 const startDate = formatDate(data.start_date);
                 const endDate = formatDate(data.end_date);
 
                 document.getElementById("info").innerHTML = `
-                    <p><span class="highlight">${name}</span> adlı kullanıcı</p>
-                    <p><strong>$${amount}</strong> ödeyerek</p>
-                    <p><span class="highlight">${platform}</span> platformuna abone oldu.</p>
-                    <p><strong>Başlangıç Tarihi:</strong> ${startDate}</p>
-                    <p><strong>Bitiş Tarihi:</strong> ${endDate}</p>
+                    <p><span class="highlight">${name}</span> user named </p>
+                    <p><strong>$${amount}</strong> by paying</p>
+                    <p><span class="highlight">${platform}</span> subscribed to the platform.</p>
+                    <p><strong>Start Date:</strong> ${startDate}</p>
+                    <p><strong>End Date:</strong> ${endDate}</p>
                 `;
             })
             .catch(() => {
-                document.getElementById("info").innerHTML = `<p class="error">Stripe'dan veri alınamadı.</p>`;
+                document.getElementById("info").innerHTML = `<p class="error">Failed to receive data from Stripe.</p>`;
             });
     }
 </script>

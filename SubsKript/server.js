@@ -84,8 +84,8 @@ app.get('/checkout-session', async (req, res) => {
         });
 
     } catch (err) {
-        console.error("❌ Session alma hatası:", err.message);
-        res.status(500).json({ error: "Session bilgisi alınamadı." });
+        console.error("❌ Session import error:", err.message);
+        res.status(500).json({ error: "Session information not received." });
     }
 });
 

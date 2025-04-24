@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix - Abonelikler</title>
+    <title>Netflix - Subscriptions</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,7 +57,7 @@
     }
 
     async function fetchSubscription() {
-        const subscriptionId = "sub_1R4GW8Lwf2wYz1lQzXPWVxl3"; // Netflix'in Stripe abonelik ID'si
+        const subscriptionId = "sub_1R4GW8Lwf2wYz1lQzXPWVxl3"; // Netflix Stripe subscription ID
         const stripeApiKey = "sk_test_51R49gSLwf2wYz1lQq77S0ms4pCVKGfanIGMkH3YISSvlNcCKdq1fHn0H8CgCF5YCqM9YHUpxlx3ecLY6D6fNkOTD003dZ7WFMw"; // Stripe Secret Key
 
         try {
@@ -70,39 +70,39 @@
             });
 
             const data = await response.json();
-            console.log(data); // API yanıtını kontrol et
+            console.log(data); // Check API response
 
             if (data.error) {
-                document.getElementById("status").innerText = "Hata!";
-                document.getElementById("next-payment").innerText = "Bilinmiyor";
-                document.getElementById("end-date").innerText = "Bilinmiyor";
-                document.getElementById("amount").innerText = "Bilinmiyor";
-                console.error("Stripe API Hatası:", data.error.message);
+                document.getElementById("status").innerText = "Error!";
+                document.getElementById("next-payment").innerText = "Unknown";
+                document.getElementById("end-date").innerText = "Unknown";
+                document.getElementById("amount").innerText = "Unknown";
+                console.error("Stripe API Error:", data.error.message);
                 return;
             }
 
-            // Abonelik durumu
+            // Subscription status
             document.getElementById("status").innerText = data.status.toUpperCase();
 
-            // Sonraki ödeme tarihi
-            const nextInvoice = data.current_period_end ? new Date(data.current_period_end * 1000).toLocaleDateString() : "Bilgi Yok";
+            // Next payment date
+            const nextInvoice = data.current_period_end ? new Date(data.current_period_end * 1000).toLocaleDateString() : "No Info";
             document.getElementById("next-payment").innerText = nextInvoice;
 
-            // Abonelik iptal tarihi (Eğer belirlenmişse)
-            const cancelDate = data.cancel_at ? new Date(data.cancel_at * 1000).toLocaleDateString() : "Süresiz";
+            // Cancellation date (if set)
+            const cancelDate = data.cancel_at ? new Date(data.cancel_at * 1000).toLocaleDateString() : "No Expiration";
             document.getElementById("end-date").innerText = cancelDate;
 
-            // Ödeme tutarı
+            // Payment amount
             const amount = data.items.data[0]?.price?.unit_amount / 100;
             const currency = data.items.data[0]?.price?.currency.toUpperCase();
             document.getElementById("amount").innerText = `${amount} ${currency}`;
 
         } catch (error) {
-            console.error("API Hatası:", error);
-            document.getElementById("status").innerText = "Bağlantı hatası!";
-            document.getElementById("next-payment").innerText = "Bilinmiyor";
-            document.getElementById("end-date").innerText = "Bilinmiyor";
-            document.getElementById("amount").innerText = "Bilinmiyor";
+            console.error("API Error:", error);
+            document.getElementById("status").innerText = "Connection error!";
+            document.getElementById("next-payment").innerText = "Unknown";
+            document.getElementById("end-date").innerText = "Unknown";
+            document.getElementById("amount").innerText = "Unknown";
         }
     }
 

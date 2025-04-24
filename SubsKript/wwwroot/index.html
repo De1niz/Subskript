@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abone Ol</title>
+    <title>Subscribe</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
         body {
@@ -60,7 +60,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Abone olmak istediğin servisi seç</h1>
+    <h1>Select the service you want to subscribe to</h1>
     <select id="serviceSelect">
         <option value="appletv">Apple TV</option>
         <option value="spotify">Spotify</option>
@@ -69,9 +69,9 @@
         <option value="netflix">Netflix</option>
     </select>
     <br>
-    <button onclick="subscribe()">Abone Ol</button>
+    <button onclick="subscribe()">Subscribe</button>
 
-    <div class="back" onclick="goBack()">← Geri Dön</div>
+    <div class="back" onclick="goBack()">← Go Back</div>
 </div>
 
 <script>
@@ -79,11 +79,11 @@
         const selectedService = document.getElementById("serviceSelect").value;
 
         if (!selectedService) {
-            alert("Lütfen bir servis seçin.");
+            alert("Please select a service.");
             return;
         }
 
-        console.log("Abone olunuyor:", selectedService);
+        console.log("Subscribing to:", selectedService);
 
         fetch('/create-checkout-session', {
             method: 'POST',
@@ -95,12 +95,12 @@
                 if (data.url) {
                     window.location.href = data.url;
                 } else {
-                    alert("Stripe yanıtı alınamadı.");
+                    alert("Stripe response not received.");
                 }
             })
             .catch(err => {
-                console.error("Hata:", err);
-                alert("Sunucuya bağlanırken hata oluştu.");
+                console.error("Error:", err);
+                alert("An error occurred while connecting to the server.");
             });
     }
 

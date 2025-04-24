@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Stripe;
+using System.Linq;
 
 namespace SubsKript.Services
 {
@@ -13,16 +14,15 @@ namespace SubsKript.Services
         public CustomerService(IConfiguration config)
         {
             _secretKey = config.GetValue<string>("Stripe:SecretKey") 
-                         ?? throw new Exception("Stripe Secret Key bulunamadı.");
+                         ?? throw new Exception("Stripe Secret Key not found.");
             StripeConfiguration.ApiKey = _secretKey;
         }
 
-        // Kullanıcıyı Stripe'a kaydet
+        // Register a user in Stripe
         public async Task<string> CreateCustomerAsync(string email, string name)
         {
             try
             {
-                // Stripe'a yeni müşteri kaydediyoruz
                 var options = new CustomerCreateOptions
                 {
                     Email = email,
@@ -31,15 +31,15 @@ namespace SubsKript.Services
 
                 var customerService = new Stripe.CustomerService();
                 var customer = await customerService.CreateAsync(options);
-                return customer.Id; // Customer ID döner
+                return customer.Id; // Return customer ID
             }
             catch (Exception ex)
             {
-                throw new Exception($"Stripe müşteri kaydında hata oluştu: {ex.Message}");
+                throw new Exception($"Error occurred while creating Stripe customer: {ex.Message}");
             }
         }
 
-        // Stripe'dan müşteri bilgilerini al
+        // Retrieve customer info from Stripe
         public async Task<Stripe.Customer> GetCustomerAsync(string email)
         {
             try
@@ -55,11 +55,11 @@ namespace SubsKript.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Stripe müşteri bilgileri alınırken hata oluştu: {ex.Message}");
+                throw new Exception($"Error occurred while retrieving Stripe customer info: {ex.Message}");
             }
         }
 
-        // Müşteriyi Stripe'da güncelle (örneğin, yeni özellikler ekleyebiliriz)
+        // Update customer info in Stripe
         public async Task<Stripe.Customer> UpdateCustomerAsync(string customerId, string newEmail, string newName)
         {
             try
@@ -76,11 +76,11 @@ namespace SubsKript.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Stripe müşteri güncellenirken hata oluştu: {ex.Message}");
+                throw new Exception($"Error occurred while updating Stripe customer: {ex.Message}");
             }
         }
 
-        // Müşterinin aboneliklerini listele
+        // List all subscriptions for a customer
         public async Task<List<Stripe.Subscription>> GetSubscriptionsAsync(string customerId)
         {
             try
@@ -95,7 +95,7 @@ namespace SubsKript.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Stripe abonelik bilgileri alınırken hata oluştu: {ex.Message}");
+                throw new Exception($"Error occurred while retrieving Stripe subscriptions: {ex.Message}");
             }
         }
     }

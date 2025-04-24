@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abone Ol</title>
+    <title>Subscribe</title>
     <style>
         body {
             background-color: black;
@@ -57,12 +57,12 @@
         }
     </style>
 
-    <!-- ✅ Stripe JavaScript kütüphanesi eklenmeli -->
+    <!-- ✅ Stripe JavaScript library should be included -->
     <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
 <div class="container">
-    <h1>Abone olmak istediğin servisi seç</h1>
+    <h1>Select the service you want to subscribe to</h1>
     <select id="serviceSelect">
         <option value="Apple TV">Apple TV</option>
         <option value="Spotify">Spotify</option>
@@ -83,7 +83,7 @@
         const selectedService = document.getElementById("serviceSelect").value;
 
         if (!userId) {
-            alert("Kullanıcı bulunamadı. Lütfen önce giriş yapın.");
+            alert("User not found. Please log in first.");
             return;
         }
 
@@ -102,19 +102,19 @@
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Bilinmeyen hata oluştu');
+                throw new Error(data.error || 'An unknown error occurred');
             }
 
-            // ✅ Stripe yönlendirmesi burada yapılır
-            const stripe = Stripe("pk_test_51R49gSLwf2wYz1lQ5g8eTq9NcWlUvpIJBePbnR4Pqqe3XuzkWG3WdqSDaU8f6rLamXghaBrQFiDsspilEZW86OT100c6Vg5udC"); // BURAYA PUBLISHABLE KEY’ini yaz
+            // ✅ Stripe redirection happens here
+            const stripe = Stripe("pk_test_51R49gSLwf2wYz1lQ5g8eTq9NcWlUvpIJBePbnR4Pqqe3XuzkWG3WdqSDaU8f6rLamXghaBrQFiDsspilEZW86OT100c6Vg5udC"); // PUT YOUR PUBLISHABLE KEY HERE
 
             await stripe.redirectToCheckout({
                 sessionId: data.sessionId
             });
 
         } catch (error) {
-            console.error("Stripe bağlantı hatası:", error);
-            alert("Stripe bağlantı hatası: " + error.message);
+            console.error("Stripe connection error:", error);
+            alert("Stripe connection error: " + error.message);
         }
     }
 

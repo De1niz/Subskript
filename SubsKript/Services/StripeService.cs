@@ -19,12 +19,12 @@ namespace SubsKript.Services
         public StripeService(IConfiguration config, AppDbContext context)
         {
             _secretKey = config.GetValue<string>("Stripe:SecretKey")
-                         ?? throw new Exception("Stripe Secret Key bulunamadı.");
+                         ?? throw new Exception("Stripe Secret Key not found.");
             StripeConfiguration.ApiKey = _secretKey;
             _context = context;
         }
 
-        // 🔹 Dinamik Price ID al
+        // 🔹 Get dynamic Price ID for a platform
         public async Task<string> GetPriceIdForPlatform(string platform)
         {
             var priceService = new PriceService();
@@ -43,24 +43,24 @@ namespace SubsKript.Services
             return matched?.Id;
         }
 
-        // 🔹 Checkout oturumu + Stripe müşteri kontrol/kayıt
+        // 🔹 Create checkout session + check/register Stripe customer
         public async Task<Session> CreateCheckoutSessionAsync(int userId, string platform)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
-                throw new Exception("Kullanıcı bulunamadı.");
+                throw new Exception("User not found.");
 
             var customerService = new Stripe.CustomerService();
             Stripe.Customer customer = null;
 
-            // ✅ StripeCustomerId kayıtlıysa kullan
+            // ✅ Use StripeCustomerId if it exists
             if (!string.IsNullOrEmpty(user.StripeCustomerId))
             {
                 customer = await customerService.GetAsync(user.StripeCustomerId);
             }
             else
             {
-                // Email'e göre Stripe'da arama
+                // Search by email in Stripe
                 var existing = await customerService.ListAsync(new CustomerListOptions
                 {
                     Email = user.Email,
@@ -68,30 +68,30 @@ namespace SubsKript.Services
                 });
                 customer = existing.FirstOrDefault();
 
-                // Stripe'da da yoksa oluştur
+                // If not found, create a new one
                 if (customer == null)
                 {
                     var customerOptions = new CustomerCreateOptions
                     {
                         Email = user.Email,
                         Name = user.Username,
-                        Description = $"Oluşturma tarihi: {DateTime.Now}"
+                        Description = $"Created at: {DateTime.Now}"
                     };
                     customer = await customerService.CreateAsync(customerOptions);
                 }
 
-                // StripeCustomerId kaydet
+                // Save StripeCustomerId
                 user.StripeCustomerId = customer.Id;
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
             }
 
-            // 🔹 Price ID getir
+            // 🔹 Get Price ID
             string priceId = await GetPriceIdForPlatform(platform);
             if (string.IsNullOrEmpty(priceId))
-                throw new Exception($"'{platform}' için Price ID bulunamadı!");
+                throw new Exception($"Price ID not found for '{platform}'!");
 
-            // 🔹 Checkout session oluştur
+            // 🔹 Create checkout session
             var sessionService = new SessionService();
             var sessionOptions = new SessionCreateOptions
             {
@@ -118,21 +118,21 @@ namespace SubsKript.Services
             return await sessionService.CreateAsync(sessionOptions);
         }
 
-        // 🔹 Session bilgisi getir
+        // 🔹 Retrieve session info
         public async Task<Session> GetSessionAsync(string sessionId)
         {
             var sessionService = new SessionService();
             return await sessionService.GetAsync(sessionId);
         }
 
-        // 🔹 Stripe abonelik bilgisi getir
+        // 🔹 Retrieve Stripe subscription info
         public async Task<Subscription> GetStripeSubscriptionAsync(string subscriptionId)
         {
             var subscriptionService = new SubscriptionService();
             return await subscriptionService.GetAsync(subscriptionId);
         }
 
-        // 🔹 Manuel müşteri oluştur (opsiyonel)
+        // 🔹 Create customer manually (optional)
         public async Task<string> CreateCustomer(string email, string name)
         {
             var customerService = new Stripe.CustomerService();
@@ -145,7 +145,7 @@ namespace SubsKript.Services
             return customer.Id;
         }
 
-        // 🔹 Tek seferlik ödeme (opsiyonel)
+        // 🔹 One-time payment (optional)
         public async Task<bool> ChargeSubscription(string customerId, long amount)
         {
             var paymentIntentService = new PaymentIntentService();

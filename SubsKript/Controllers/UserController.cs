@@ -27,7 +27,7 @@ namespace SubsKript.Controllers
             _config = config;
         }
 
-        // 🔐 Giriş (POST: /api/user/login)
+        // 🔐 Login (POST: /api/user/login)
         [HttpPost("login")]
         [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -56,7 +56,7 @@ namespace SubsKript.Controllers
             return Ok(response);
         }
 
-        // 🔐 Kayıt (POST: /api/user/register)
+        // 🔐 Register (POST: /api/user/register)
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -66,7 +66,7 @@ namespace SubsKript.Controllers
              || string.IsNullOrWhiteSpace(newUser.Email)
              || string.IsNullOrWhiteSpace(newUser.Password))
             {
-                return BadRequest(new ErrorResponse { Message = "Username, email and password are required." });
+                return BadRequest(new ErrorResponse { Message = "Username, email, and password are required." });
             }
 
             var userExists = _context.Users.Any(u =>
@@ -85,7 +85,7 @@ namespace SubsKript.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // ✨ Stripe Customer Oluştur
+            // ✨ Create Stripe Customer
             var customerService = new CustomerService();
             var stripeCustomer = await customerService.CreateAsync(new CustomerCreateOptions
             {
@@ -97,15 +97,15 @@ namespace SubsKript.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(); // sadece 200 dönüyoruz, mesaj gerekirse ekleyebilirsin
+            return Ok(); // returning just 200, you may add a message if needed
         }
 
-        // 🔄 Test bağlantı (GET: /api/user/test)
+        // 🔄 Test connection (GET: /api/user/test)
         [HttpGet("test")]
         [ProducesResponseType(typeof(TestResponse), StatusCodes.Status200OK)]
         public IActionResult TestConnection()
         {
-            return Ok(new TestResponse { Message = "Bağlantı başarılı." });
+            return Ok(new TestResponse { Message = "Connection successful." });
         }
 
         private string GenerateJwtToken(User user)
@@ -132,7 +132,7 @@ namespace SubsKript.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // ----- DTO’lar -----
+        // ----- DTOs -----
         public class LoginRequest
         {
             public string Username { get; set; } = string.Empty;

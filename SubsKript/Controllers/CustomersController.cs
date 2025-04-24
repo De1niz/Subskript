@@ -21,7 +21,7 @@ namespace SubsKript.Controllers
         {
             if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Name))
             {
-                return BadRequest(new { message = "İsim ve e-posta boş olamaz." });
+                return BadRequest(new { message = "Name and email cannot be empty." });
             }
 
             var customerId = await _stripeService.CreateCustomer(model.Email, model.Name);

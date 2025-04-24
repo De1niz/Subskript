@@ -10,7 +10,7 @@ namespace SubsKript.Controllers
 {
     [Route("api/admin/users")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")] // 🔐 JWT Token zorunlu
+    [Authorize(AuthenticationSchemes = "Bearer")] // 🔐 JWT Token required
     public class AdminApiController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -49,12 +49,12 @@ namespace SubsKript.Controllers
                 _context.Users.Remove(userToDelete);
                 _context.SaveChanges();
                 _logger.LogInformation($"User ID {id} deleted.");
-                return NoContent(); // ✅ 204 başarı
+                return NoContent(); // ✅ 204 success
             }
             catch (DbUpdateException ex)
             {
-                _logger.LogError($"Hata: {ex.Message}");
-                return StatusCode(500, new { message = "Kullanıcı silinirken hata oluştu." });
+                _logger.LogError($"Error: {ex.Message}");
+                return StatusCode(500, new { message = "An error occurred while deleting the user." });
             }
         }
     }

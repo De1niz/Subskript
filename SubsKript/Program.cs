@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
-// ✅ Veritabanı
+// ✅ Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// ✅ CORS (frontend portu tanımlı)
+// ✅ CORS (define frontend origin)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -51,7 +51,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ✅ Servisler ve Controller yapısı
+// ✅ Services and Controller setup
 builder.Services.AddScoped<StripeService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
@@ -59,7 +59,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ✅ Middleware sırası
+// ✅ Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -80,7 +80,7 @@ app.MapControllerRoute(
 
 app.MapControllers();
 
-// ✅ Veritabanı Init
+// ✅ Database initialization
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
