@@ -11,7 +11,7 @@ SubsKript is a modern web-based subscription management system built with **ASP.
 - ✅ Create Stripe customers
 - ✅ Start new subscriptions
 - ✅ View active subscriptions and details
-- ✅ Collect payments using Stripe (PaymentIntent)
+- ✅ Collect payments using Stripe (Payment Intent)
 - ✅ Delete or list customers
 - ✅ Admin JWT-based authentication
 - ✅ Responsive HTML/CSS/JS-based frontend
