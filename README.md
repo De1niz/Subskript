@@ -79,7 +79,7 @@ SubsKript is a modern web-based subscription management system built with **ASP.
 ## 🔧 Installation & Run
 
 ```bash
-git clone https://github.com/kullanici-adi/SubsKript.git
+git clone https://github.com/Username/SubsKript.git
 cd SubsKript
 dotnet restore
 dotnet run
