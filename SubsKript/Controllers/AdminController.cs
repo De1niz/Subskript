@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SubsKript.Data;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using SubsKript.Models;
 
 namespace SubsKript.Controllers
 {
@@ -26,6 +27,27 @@ namespace SubsKript.Controllers
 
             return View("Login");
         }
+        
+        // 🔹 PUT: /admin/users/{id}
+        [HttpPut("users/{id}")]
+        public IActionResult UpdateUser(int id, [FromBody] User updatedUser)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound(new { message = "Kullanıcı bulunamadı." });
+            }
+
+            // Kullanıcı bilgilerini güncelle
+            user.Username = updatedUser.Username;
+            user.Email = updatedUser.Email;
+            user.Password = updatedUser.Password;
+
+            _context.SaveChanges();
+
+            return Ok(new { message = "Kullanıcı başarıyla güncellendi.", user });
+        }
+
 
         // 🔹 POST: /admin/login
         [HttpPost("login")]

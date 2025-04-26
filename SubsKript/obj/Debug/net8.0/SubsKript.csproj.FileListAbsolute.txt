@@ -128,3 +128,10 @@
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
 /Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Google.Apis.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Google.Apis.Auth.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Google.Apis.Calendar.v3.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Google.Apis.Core.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/Google.Apis.Oauth2.v2.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/System.Management.dll
+/Users/deniz/Desktop/MVC/SubsKript/SubsKript/bin/Debug/net8.0/runtimes/win/lib/net7.0/System.Management.dll

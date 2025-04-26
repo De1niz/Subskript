@@ -5,12 +5,14 @@ using Microsoft.IdentityModel.Tokens;
 using Stripe;
 using SubsKript.Data;
 using SubsKript.Models;
+using SubsKript.Services;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using StripeCustomerService = Stripe.CustomerService;
 
 namespace SubsKript.Controllers
 {
@@ -20,11 +22,13 @@ namespace SubsKript.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _config;
+        private readonly StripeService _stripeService;
 
-        public UserController(AppDbContext context, IConfiguration config)
+        public UserController(AppDbContext context, IConfiguration config, StripeService stripeService)
         {
             _context = context;
             _config = config;
+            _stripeService = stripeService;
         }
 
         // 🔐 Login (POST: /api/user/login)
@@ -86,7 +90,7 @@ namespace SubsKript.Controllers
             await _context.SaveChangesAsync();
 
             // ✨ Create Stripe Customer
-            var customerService = new CustomerService();
+            var customerService = new StripeCustomerService();
             var stripeCustomer = await customerService.CreateAsync(new CustomerCreateOptions
             {
                 Email = user.Email,
@@ -106,6 +110,41 @@ namespace SubsKript.Controllers
         public IActionResult TestConnection()
         {
             return Ok(new TestResponse { Message = "Connection successful." });
+        }
+
+        // 🔄 Kullanıcı Bilgisi Güncelle (PUT: /api/user/{id})
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] RegisterRequest updatedUser)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new ErrorResponse { Message = "User not found." });
+            }
+
+            // Güncelleme işlemleri
+            user.Username = updatedUser.Username;
+            user.Email = updatedUser.Email;
+            user.Password = updatedUser.Password;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            // Stripe müşteri bilgilerini de güncelle
+            if (!string.IsNullOrEmpty(user.StripeCustomerId))
+            {
+                await _stripeService.UpdateCustomerAsync(user.StripeCustomerId, user.Username, user.Email);
+            }
+
+            return Ok(new
+            {
+                Message = "Kullanıcı bilgileri güncellendi.",
+                user.Id,
+                user.Username,
+                user.Email
+            });
         }
 
         private string GenerateJwtToken(User user)

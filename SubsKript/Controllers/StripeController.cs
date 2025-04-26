@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SubModel = SubsKript.Models.Subscription;
+using StripeCustomer = Stripe.Customer;
 
 namespace SubsKript.Controllers
 {
@@ -32,6 +33,26 @@ namespace SubsKript.Controllers
 
             var session = await _stripeService.CreateCheckoutSessionAsync(userId, platform);
             return Ok(new { url = session.Url });
+        }
+
+        [HttpPut("api/customers/{id}")]
+        public async Task<IActionResult> UpdateStripeCustomer(string id, [FromBody] UpdateCustomerRequest request)
+        {
+            try
+            {
+                var updatedCustomer = await _stripeService.UpdateCustomerAsync(id, request.Name, request.Email);
+
+                return Ok(new
+                {
+                    message = "Stripe customer information has been updated.",
+                    updatedCustomer.Name,
+                    updatedCustomer.Email
+                });
+            }
+            catch (StripeException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
         [HttpGet("api/subscription/{userId}/{platform}")]
@@ -112,6 +133,12 @@ namespace SubsKript.Controllers
         public class PlanRequest
         {
             public string Plan { get; set; }
+        }
+
+        public class UpdateCustomerRequest
+        {
+            public string Name { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
         }
     }
 }

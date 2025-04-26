@@ -6,6 +6,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SubsKript.Models;
+using LocalSubscription = SubsKript.Models.Subscription;
+using StripeCustomer = Stripe.Customer;
+using LocalCustomer = SubsKript.Models.Customer;
+
 
 // Stripe alias definition
 using StripeCustomerService = Stripe.CustomerService;
@@ -41,7 +46,7 @@ namespace SubsKript.Controllers
             StripeConfiguration.ApiKey = "sk_test_51R49gSLwf2wYz1lQq77S0ms4pCVKGfanIGMkH3YISSvlNcCKdq1fHn0H8CgCF5YCqM9YHUpxlx3ecLY6D6fNkOTD003dZ7WFMw";
             var customerService = new StripeCustomerService();
 
-            Customer stripeCustomer = null;
+            StripeCustomer stripeCustomer = null;
 
             if (!string.IsNullOrEmpty(user.StripeCustomerId))
             {
@@ -88,6 +93,35 @@ namespace SubsKript.Controllers
 
             return Ok(filtered);
         }
+        
+        
+        // 🔄 Abonelik Güncelle (PUT: /api/subscriptions/{id})
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateSubscription(int id, [FromBody] LocalSubscription updatedSub)
+        {
+            var existingSub = await _context.Subscriptions.FindAsync(id);
+            if (existingSub == null)
+            {
+                return NotFound(new { message = "No subscription found." });
+            }
+
+            existingSub.Platform = updatedSub.Platform;
+            existingSub.Status = updatedSub.Status;
+            existingSub.StartDate = updatedSub.StartDate.ToString();
+            existingSub.EndDate = updatedSub.EndDate.ToString();
+            existingSub.Amount = updatedSub.Amount;
+
+            _context.Subscriptions.Update(existingSub);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Subscription successfully updated.",
+                subscription = existingSub
+            });
+        }
+
+
 
         // 🔹 Create a checkout session (POST: /api/subscriptions/create-checkout-session)
         [HttpPost("create-checkout-session")]

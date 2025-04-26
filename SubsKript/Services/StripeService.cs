@@ -8,6 +8,7 @@ using Stripe.Checkout;
 using SubsKript.Data;
 using SubsKript.Models;
 using Subscription = Stripe.Subscription;
+using StripeCustomer = Stripe.Customer;
 
 namespace SubsKript.Services
 {
@@ -117,6 +118,22 @@ namespace SubsKript.Services
 
             return await sessionService.CreateAsync(sessionOptions);
         }
+
+        
+        // 🔄 Update Stripe customer
+        public async Task<StripeCustomer> UpdateCustomerAsync(string customerId, string newName, string newEmail)
+        {
+            var customerService = new Stripe.CustomerService(); 
+
+            var updateOptions = new CustomerUpdateOptions
+            {
+                Name = newName,
+                Email = newEmail
+            };
+
+            return await customerService.UpdateAsync(customerId, updateOptions);
+        }
+
 
         // 🔹 Retrieve session info
         public async Task<Session> GetSessionAsync(string sessionId)
