@@ -11,10 +11,11 @@ SubsKript is a modern web-based subscription management system built with **ASP.
 - ✅ Create Stripe customers
 - ✅ Start new subscriptions
 - ✅ View active subscriptions and details
-- ✅ Collect payments using Stripe (PaymentIntent)
+- ✅ Collect payments using Stripe (Payment Intent)
 - ✅ Delete or list customers
 - ✅ Admin JWT-based authentication
 - ✅ Responsive HTML/CSS/JS-based frontend
+- ✅ Update customers, users, subscriptions via PUT methods
 
 ---
 
@@ -48,12 +49,56 @@ SubsKript is a modern web-based subscription management system built with **ASP.
 |--------|--------------------------|------------------------------|
 | GET    | `/api/customers`         | List all Stripe customers    |
 | DELETE | `/api/customers/{id}`    | Delete a customer by ID      |
+| PUT    | `/api/customers/{id}`    | Update customer details      |
 
 ### 🔹 Payment Processing (`PaymentController`)
 
 | Method | Endpoint           | Description                            |
 |--------|--------------------|----------------------------------------|
 | POST   | `/api/payment`     | Collect payment from a Stripe customer |
+
+### 🔹 Admin (`AdminController`, `AdminAuthController`)
+
+| Method | Endpoint                | Description                      |
+|--------|--------------------------|----------------------------------|
+| GET    | `/admin`                 | Get admin info                   |
+| GET    | `/admin/users`          | List all users                   |
+| PUT    | `/admin/users/{id}`     | Update a user by ID              |
+| POST   | `/admin/login`          | Admin login                      |
+| GET    | `/admin/logout`         | Admin logout                     |
+
+### 🔹 Subscription (`SubscriptionController`)
+
+| Method | Endpoint                                      | Description                       |
+|--------|-----------------------------------------------|-----------------------------------|
+| GET    | `/api/subscriptions`                          | Get all subscriptions             |
+| PUT    | `/api/subscriptions/{id}`                     | Update a subscription             |
+| POST   | `/api/subscriptions/create-checkout-session`  | Create checkout session for Stripe|
+
+### 🔹 Stripe (`StripeController`)
+
+| Method | Endpoint                                      | Description                         |
+|--------|-----------------------------------------------|-------------------------------------|
+| POST   | `/subscribe`                                  | Start a subscription                |
+| PUT    | `/api/customers/{id}`                         | Update Stripe customer              |
+| GET    | `/api/subscription/{userId}/{platform}`       | Get user's subscription to platform |
+| GET    | `/success`                                    | Success callback page               |
+| GET    | `/checkout-session`                           | Get Stripe checkout session         |
+
+### 🔹 User (`UserController`)
+
+| Method | Endpoint             | Description                |
+|--------|----------------------|----------------------------|
+| POST   | `/api/user/login`    | User login                 |
+| POST   | `/api/user/register` | User registration          |
+| GET    | `/api/user/test`     | Authenticated user test    |
+| PUT    | `/api/user/{id}`     | Update user info           |
+
+### 🔹 WebHook (`WebhookController`)
+
+| Method | Endpoint   | Description                  |
+|--------|------------|------------------------------|
+| POST   | `/webhook` | Handles Stripe webhook events|
 
 ---
 
@@ -79,8 +124,8 @@ SubsKript is a modern web-based subscription management system built with **ASP.
 ## 🔧 Installation & Run
 
 ```bash
-git clone https://github.com/kullanici-adi/subskript.git
-cd subskript
+git clone https://github.com/Username/SubsKript.git
+cd SubsKript
 dotnet restore
 dotnet run
 ```
@@ -171,6 +216,7 @@ SubsKript
 - Admins log in via `admin-login.html`
 - Admin token is generated via JWT and sent with all protected requests
 - Admin panel (`admin-users.html`) enables viewing and deletion of users
+- Login from the top right on the login screen
 
 ---
 

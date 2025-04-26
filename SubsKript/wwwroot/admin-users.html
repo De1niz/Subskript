@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin - Kullanıcı Yönetimi</title>
+    <title>Admin - User Management</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,11 +16,13 @@
             border-collapse: collapse;
             background: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
         }
         th, td {
             padding: 12px;
             border: 1px solid #ddd;
             text-align: left;
+            vertical-align: top;
         }
         th {
             background: #3498db;
@@ -41,6 +43,19 @@
             float: right;
             background: #34495e;
             margin-bottom: 20px;
+            padding: 8px 16px;
+        }
+        .subscription-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .subscription-list li {
+            background: #ecf0f1;
+            margin: 4px 0;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -56,11 +71,12 @@
         <th>ID</th>
         <th>Username</th>
         <th>E-mail</th>
+        <th>Subscriptions</th>
         <th>Process</th>
     </tr>
     </thead>
     <tbody>
-    <!-- Dinamik kullanıcılar buraya gelecek -->
+    <!-- Dynamic users will appear here -->
     </tbody>
 </table>
 
@@ -90,18 +106,30 @@
             tbody.innerHTML = "";
 
             users.forEach(user => {
+                const subscriptionItems = user.subscriptions && user.subscriptions.length > 0
+                    ? `<ul class="subscription-list">
+                        ${user.subscriptions.map(sub => `
+                            <li>
+                                <strong>${sub.platform}</strong> (${sub.status})<br/>
+                                <small>Start: ${sub.startDate} | End: ${sub.endDate}</small>
+                            </li>
+                        `).join('')}
+                       </ul>`
+                    : `<span>No subscriptions</span>`;
+
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${user.id}</td>
                     <td>${user.username}</td>
                     <td>${user.email}</td>
+                    <td>${subscriptionItems}</td>
                     <td><button onclick="deleteUser(${user.id})">Delete</button></td>
                 `;
                 tbody.appendChild(row);
             });
         } catch (err) {
-            alert("Users failed to load.");
             console.error(err);
+            alert("Users failed to load.");
         }
     }
 
@@ -122,14 +150,13 @@
                 alert("User could not be deleted.");
             }
         } catch (err) {
-            alert("There was an error.");
             console.error(err);
+            alert("There was an error.");
         }
     }
 
     function logout() {
         localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminUsername");
         window.location.href = "admin-login.html";
     }
 

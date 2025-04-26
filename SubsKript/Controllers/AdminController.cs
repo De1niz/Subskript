@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SubsKript.Data;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using Microsoft.EntityFrameworkCore; // ✅ Include için gerekli
 using SubsKript.Models;
 
 namespace SubsKript.Controllers
@@ -48,7 +49,6 @@ namespace SubsKript.Controllers
             return Ok(new { message = "Kullanıcı başarıyla güncellendi.", user });
         }
 
-
         // 🔹 POST: /admin/login
         [HttpPost("login")]
         public IActionResult DoLogin(string username, string password)
@@ -70,7 +70,10 @@ namespace SubsKript.Controllers
             if (HttpContext.Session.GetString("IsAdmin") != "true")
                 return RedirectToAction("Login");
 
-            var users = _context.Users.ToList();
+            var users = _context.Users
+                .Include(u => u.Subscriptions) // ✅ Kullanıcıların abonelikleri de dahil ediliyor
+                .ToList();
+
             return View("Users", users);
         }
 
